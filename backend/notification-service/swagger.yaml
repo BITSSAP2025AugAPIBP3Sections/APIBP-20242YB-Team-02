@@ -1,0 +1,59 @@
+openapi: 3.0.3
+info:
+  title: Flowcast Notification Service API
+  version: 1.0.0
+  description: Sends and manages user notifications from RabbitMQ.
+servers:
+  - url: /api/v1/notifications
+paths:
+  /:
+    get:
+      summary: List all notifications for logged-in user
+      responses:
+        '200':
+          description: List of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+  /{id}/read:
+    put:
+      summary: Mark notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Notification marked as read
+  /{id}:
+    delete:
+      summary: Delete a notification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: Notification deleted
+  /clear:
+    delete:
+      summary: Clear all notifications for user
+      responses:
+        '204':
+          description: All notifications cleared
+components:
+  schemas:
+    Notification:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        title: { type: string }
+        message: { type: string }
+        status: { type: string }
+        createdAt: { type: string, format: date-time }

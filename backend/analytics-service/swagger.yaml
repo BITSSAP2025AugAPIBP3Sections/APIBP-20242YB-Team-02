@@ -1,0 +1,100 @@
+openapi: 3.0.3
+info:
+  title: Flowcast Analytics Service API
+  version: 1.0.0
+  description: Collect and serve aggregated analytics data using CQRS.
+servers:
+  - url: /api/v1/analytics
+paths:
+  /collect:
+    post:
+      summary: Add raw engagement metrics (from message queue)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId: { type: string }
+                likes: { type: integer }
+                shares: { type: integer }
+                comments: { type: integer }
+      responses:
+        '201':
+          description: Metrics collected
+  /bulk:
+    post:
+      summary: Bulk insert metrics for multiple posts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  postId: { type: string }
+                  likes: { type: integer }
+                  shares: { type: integer }
+                  comments: { type: integer }
+      responses:
+        '201':
+          description: Bulk metrics collected
+  /summary:
+    get:
+      summary: Get user-level summary (likes, shares, etc.)
+      responses:
+        '200':
+          description: Summary metrics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalPosts: { type: integer }
+                  totalLikes: { type: integer }
+                  totalShares: { type: integer }
+                  totalComments: { type: integer }
+  /post/{id}:
+    get:
+      summary: Get analytics for a specific post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Post analytics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  postId: { type: string }
+                  likes: { type: integer }
+                  shares: { type: integer }
+                  comments: { type: integer }
+  /platform/{platform}:
+    get:
+      summary: Get platform-level metrics
+      parameters:
+        - name: platform
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Platform analytics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  platform: { type: string }
+                  totalPosts: { type: integer }
+                  totalLikes: { type: integer }
+                  totalShares: { type: integer }
+                  totalComments: { type: integer }

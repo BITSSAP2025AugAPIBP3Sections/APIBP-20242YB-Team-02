@@ -1,0 +1,94 @@
+openapi: 3.0.3
+info:
+  title: Flowcast Scheduler Service API
+  version: 1.0.0
+  description: Schedule posts for publishing via RabbitMQ.
+servers:
+  - url: /api/v1/scheduler
+paths:
+  /schedule:
+    post:
+      summary: Schedule a post for future publishing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId: { type: string }
+                platforms:
+                  type: array
+                  items: { type: string }
+                scheduledAt: { type: string, format: date-time }
+      responses:
+        '201':
+          description: Job scheduled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobId: { type: string }
+                  status: { type: string }
+                  scheduledAt: { type: string, format: date-time }
+  /jobs:
+    get:
+      summary: List all scheduled jobs
+      responses:
+        '200':
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+  /jobs/{id}:
+    get:
+      summary: Get job details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Job details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+    delete:
+      summary: Cancel a scheduled job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: Job cancelled
+  /trigger/{id}:
+    post:
+      summary: Manually trigger a job immediately (for testing)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Job triggered
+components:
+  schemas:
+    Job:
+      type: object
+      properties:
+        jobId: { type: string }
+        postId: { type: string }
+        platforms:
+          type: array
+          items: { type: string }
+        status: { type: string }
+        scheduledAt: { type: string, format: date-time }

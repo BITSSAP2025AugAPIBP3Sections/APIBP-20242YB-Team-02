@@ -1,0 +1,184 @@
+openapi: 3.0.3
+info:
+  title: Flowcast Post Service API
+  version: 1.0.0
+  description: Manage post creation, editing, templates, and formatting.
+servers:
+  - url: /api/v1/posts
+paths:
+  /:
+    post:
+      summary: Create a new post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                caption: { type: string }
+                media: { type: string }
+                platforms:
+                  type: array
+                  items: { type: string }
+      responses:
+        '201':
+          description: Post created
+    get:
+      summary: List all posts of logged-in user
+      responses:
+        '200':
+          description: List of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+  /{id}:
+    get:
+      summary: Fetch details of a post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Post details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+    put:
+      summary: Update a post (caption, media, etc.)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                caption: { type: string }
+                media: { type: string }
+                platforms:
+                  type: array
+                  items: { type: string }
+      responses:
+        '200':
+          description: Post updated
+    delete:
+      summary: Delete a post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: Post deleted
+  /media/upload:
+    post:
+      summary: Upload media (mocked endpoint)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        '201':
+          description: Media uploaded
+  /templates:
+    get:
+      summary: Get all templates
+      responses:
+        '200':
+          description: List of templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Template'
+    post:
+      summary: Create a reusable post template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Template'
+      responses:
+        '201':
+          description: Template created
+  /templates/{id}:
+    put:
+      summary: Update template
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Template'
+      responses:
+        '200':
+          description: Template updated
+    delete:
+      summary: Delete template
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: Template deleted
+  /graphql:
+    post:
+      summary: Fetch posts and analytics data via GraphQL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query: { type: string }
+      responses:
+        '200':
+          description: GraphQL response
+components:
+  schemas:
+    Post:
+      type: object
+      properties:
+        id: { type: string }
+        caption: { type: string }
+        media: { type: string }
+        platforms:
+          type: array
+          items: { type: string }
+        status: { type: string }
+    Template:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        caption: { type: string }
+        media: { type: string }
+        platforms:
+          type: array
+          items: { type: string }

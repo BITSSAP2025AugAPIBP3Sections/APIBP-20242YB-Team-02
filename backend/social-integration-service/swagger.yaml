@@ -1,0 +1,52 @@
+openapi: 3.0.3
+info:
+  title: Flowcast Social Integration Service API
+  version: 1.0.0
+  description: Publishes posts to external social networks (mocked). REST endpoints for admin/debug.
+servers:
+  - url: /api/v1/integration
+paths:
+  /status:
+    get:
+      summary: Check service & circuit breaker status
+      responses:
+        '200':
+          description: Circuit breaker status
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /simulate-failure/{platform}:
+    post:
+      summary: Manually open circuit (for testing)
+      parameters:
+        - name: platform
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Circuit opened for platform
+  /logs/{postId}:
+    get:
+      summary: Retrieve mock publish logs
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Publish logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    timestamp: { type: string, format: date-time }
+                    status: { type: string }
+                    message: { type: string }
