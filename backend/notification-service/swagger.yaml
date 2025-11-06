@@ -2,58 +2,85 @@ openapi: 3.0.3
 info:
   title: Flowcast Notification Service API
   version: 1.0.0
-  description: Sends and manages user notifications from RabbitMQ.
+  description: Handles sending notifications. Uses in-memory storage (no DB).
 servers:
-  - url: /api/v1/notifications
+  - url: /
 paths:
   /:
     get:
-      summary: List all notifications for logged-in user
+      summary: Health check
       responses:
         '200':
-          description: List of notifications
+          description: Service health and info
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Notification'
-  /{id}/read:
-    put:
-      summary: Mark notification as read
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
+                $ref: '#/components/schemas/Health'
+  /notify:
+    post:
+      summary: Send a notification (stub)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [to, message]
+              properties:
+                to:
+                  type: string
+                  description: Recipient of the notification
+                message:
+                  type: string
+                  description: Notification message
       responses:
-        '200':
-          description: Notification marked as read
-  /{id}:
-    delete:
-      summary: Delete a notification
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
-      responses:
-        '204':
-          description: Notification deleted
-  /clear:
-    delete:
-      summary: Clear all notifications for user
-      responses:
-        '204':
-          description: All notifications cleared
+        '201':
+          description: Notification sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        '400':
+          description: Missing recipient or message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+        service:
+          type: string
+        uptime:
+          type: number
+        notificationCount:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
     Notification:
       type: object
       properties:
-        id: { type: string }
-        type: { type: string }
-        title: { type: string }
-        message: { type: string }
-        status: { type: string }
-        createdAt: { type: string, format: date-time }
+        id:
+          type: integer
+        to:
+          type: string
+        message:
+          type: string
+        sentAt:
+          type: string
+          format: date-time
+    NotificationResponse:
+      type: object
+      properties:
+        notification:
+          $ref: '#/components/schemas/Notification'
+    Error:
+      type: object
+      properties:
+        error:
+          type: string

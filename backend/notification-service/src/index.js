@@ -1,4 +1,3 @@
-
 // Notification Service Entry Point
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
@@ -9,16 +8,34 @@ const swaggerDocument = YAML.load(path.join(__dirname, '../swagger.yaml'));
 const app = express();
 app.use(express.json());
 
+// In-memory notifications array (mock DB)
+let notifications = [];
+
+// Health check endpoint
 app.get('/', (req, res) => {
-  res.send('Notification Service is running');
+  res.json({
+    status: 'ok',
+    service: 'Notification Service',
+    uptime: process.uptime(),
+    notificationCount: notifications.length,
+    timestamp: new Date().toISOString()
+  });
 });
 
+// Swagger UI
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Example endpoint to send notification (stub)
+// POST /notify - Send a notification (stub)
 app.post('/notify', (req, res) => {
-  // Stub: Replace with real notification logic
-  res.json({ message: 'Notification sent', data: req.body });
+  const { to, message } = req.body;
+  if (!to || !message) {
+    return res.status(400).json({ error: 'Missing recipient or message' });
+  }
+  const id = notifications.length ? notifications[notifications.length - 1].id + 1 : 1;
+  const notification = { id, to, message, sentAt: new Date().toISOString() };
+  notifications.push(notification);
+  console.log(`[LOG] Notification sent: ${JSON.stringify(notification)}`);
+  res.status(201).json({ notification });
 });
 
 const PORT = process.env.PORT || 3005;
