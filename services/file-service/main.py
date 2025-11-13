@@ -142,7 +142,7 @@ async def process_file_background(file_id: str, user_id: str, content: bytes, fi
         }).eq("id", file_id).execute()
 
 # Routes
-@app.post("/files/upload", response_model=FileResponse, status_code=status.HTTP_201_CREATED)
+@app.post("/api/v1/files/upload", response_model=FileResponse, status_code=status.HTTP_201_CREATED)
 async def upload_file(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
@@ -193,7 +193,7 @@ async def upload_file(
             detail=str(e)
         )
 
-@app.get("/files/{file_id}/status", response_model=FileResponse)
+@app.get("/api/v1/files/{file_id}/status", response_model=FileResponse)
 async def get_file_status(file_id: str, current_user = Depends(get_current_user)):
     """
     Check the processing status of a file.
@@ -206,7 +206,7 @@ async def get_file_status(file_id: str, current_user = Depends(get_current_user)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/files", response_model=List[FileResponse])
+@app.get("/api/v1/files", response_model=List[FileResponse])
 async def list_files(current_user = Depends(get_current_user)):
     """
     List all uploaded files for the current user.
@@ -231,7 +231,7 @@ async def list_files(current_user = Depends(get_current_user)):
         print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.delete("/files/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/api/v1/files/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_file(file_id: str, current_user = Depends(get_current_user)):
     """
     Delete a file and its associated data.
