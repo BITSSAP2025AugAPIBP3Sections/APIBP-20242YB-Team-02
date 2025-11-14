@@ -75,7 +75,7 @@ async def proxy_request(url: str, method: str, headers: dict, content: Optional[
         )
 
 # Auth & User Routes
-@app.api_route("/api/auth/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/v1/auth/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def auth_proxy(path: str, request: Request):
     url = f"{USER_SERVICE_URL}/auth/{path}"
     return await proxy_request(
@@ -86,7 +86,7 @@ async def auth_proxy(path: str, request: Request):
         dict(request.query_params)
     )
 
-@app.api_route("/api/users/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/v1/users/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def users_proxy(path: str, request: Request):
     url = f"{USER_SERVICE_URL}/users/{path}"
     return await proxy_request(
@@ -100,7 +100,7 @@ async def users_proxy(path: str, request: Request):
 # File Routes
 
 # Always forward to /files (no trailing slash) to avoid redirect issues
-@app.api_route("/api/files", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/v1/files", methods=["GET", "POST", "PUT", "DELETE"])
 async def files_root_proxy(request: Request):
     url = f"{FILE_SERVICE_URL}/files"
     return await proxy_request(
@@ -111,7 +111,7 @@ async def files_root_proxy(request: Request):
         dict(request.query_params)
     )
 
-@app.api_route("/api/files/", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/v1/files/", methods=["GET", "POST", "PUT", "DELETE"])
 async def files_root_slash_proxy(request: Request):
     url = f"{FILE_SERVICE_URL}/files"
     return await proxy_request(
@@ -122,7 +122,7 @@ async def files_root_slash_proxy(request: Request):
         dict(request.query_params)
     )
 
-@app.api_route("/api/files/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/v1/files/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def files_proxy(path: str, request: Request):
     url = f"{FILE_SERVICE_URL}/files/{path}"
     return await proxy_request(
@@ -135,7 +135,7 @@ async def files_proxy(path: str, request: Request):
 
 # Question & Quiz Routes
 
-@app.api_route("/api/rulesets", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/v1/rulesets", methods=["GET", "POST", "PUT", "DELETE"])
 async def rulesets_root_proxy(request: Request):
     url = f"{QUESTION_SERVICE_URL}/rulesets"
     return await proxy_request(
@@ -146,7 +146,7 @@ async def rulesets_root_proxy(request: Request):
         dict(request.query_params)
     )
 
-@app.api_route("/api/rulesets/", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/v1/rulesets/", methods=["GET", "POST", "PUT", "DELETE"])
 async def rulesets_root_slash_proxy(request: Request):
     url = f"{QUESTION_SERVICE_URL}/rulesets"
     return await proxy_request(
@@ -157,7 +157,7 @@ async def rulesets_root_slash_proxy(request: Request):
         dict(request.query_params)
     )
 
-@app.api_route("/api/rulesets/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/v1/rulesets/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def rulesets_proxy(path: str, request: Request):
     url = f"{QUESTION_SERVICE_URL}/rulesets/{path}"
     return await proxy_request(
@@ -168,7 +168,7 @@ async def rulesets_proxy(path: str, request: Request):
         dict(request.query_params)
     )
 
-@app.api_route("/api/generate", methods=["POST"])
+@app.api_route("/api/v1/generate", methods=["POST"])
 async def generate_proxy(request: Request):
     url = f"{QUESTION_SERVICE_URL}/generate"
     return await proxy_request(
@@ -180,7 +180,7 @@ async def generate_proxy(request: Request):
     )
 
 
-@app.api_route("/api/quizzes", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/v1/quizzes", methods=["GET", "POST", "PUT", "DELETE"])
 async def quizzes_root_proxy(request: Request):
     url = f"{QUESTION_SERVICE_URL}/quizzes"
     return await proxy_request(
@@ -191,7 +191,7 @@ async def quizzes_root_proxy(request: Request):
         dict(request.query_params)
     )
 
-@app.api_route("/api/quizzes/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/api/v1/quizzes/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def quizzes_proxy(path: str, request: Request):
     url = f"{QUESTION_SERVICE_URL}/quizzes/{path}"
     return await proxy_request(
