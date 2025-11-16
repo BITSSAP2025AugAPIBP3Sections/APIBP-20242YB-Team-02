@@ -190,8 +190,8 @@ def generate_questions_with_gemini(text: str, config: Dict[str, Any], previous_q
         raise HTTPException(status_code=500, detail=f"Failed to generate questions: {str(e)}")
 
 # Routes
-@app.post("/rulesets", response_model=RulesetResponse, status_code=status.HTTP_201_CREATED)
-@app.post("/rulesets/", response_model=RulesetResponse, status_code=status.HTTP_201_CREATED)
+@app.post("/api/v1/rulesets", response_model=RulesetResponse, status_code=status.HTTP_201_CREATED)
+@app.post("/api/v1/rulesets/", response_model=RulesetResponse, status_code=status.HTTP_201_CREATED)
 async def create_ruleset(ruleset: RulesetCreate, current_user = Depends(get_current_user)):
     """
     Create a new quiz generation ruleset.
@@ -211,7 +211,7 @@ async def create_ruleset(ruleset: RulesetCreate, current_user = Depends(get_curr
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/rulesets/{ruleset_id}", response_model=RulesetResponse)
+@app.get("/api/v1/rulesets/{ruleset_id}", response_model=RulesetResponse)
 async def get_ruleset(ruleset_id: str, current_user = Depends(get_current_user)):
     """
     Get a specific ruleset by ID.
@@ -226,7 +226,7 @@ async def get_ruleset(ruleset_id: str, current_user = Depends(get_current_user))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/rulesets", response_model=List[RulesetResponse])
+@app.get("/api/v1/rulesets", response_model=List[RulesetResponse])
 async def list_rulesets(current_user = Depends(get_current_user)):
     """
     List all rulesets for the current user.
@@ -237,7 +237,7 @@ async def list_rulesets(current_user = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/generate", status_code=status.HTTP_201_CREATED)
+@app.post("/api/v1/generate", status_code=status.HTTP_201_CREATED)
 async def generate_questions(request: GenerateQuestionsRequest, current_user = Depends(get_current_user)):
     """
     Generate questions using AI based on file content and ruleset.
@@ -293,7 +293,7 @@ async def generate_questions(request: GenerateQuestionsRequest, current_user = D
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/quizzes", response_model=QuizResponse, status_code=status.HTTP_201_CREATED)
+@app.post("/api/v1/quizzes", response_model=QuizResponse, status_code=status.HTTP_201_CREATED)
 async def create_quiz(quiz: QuizCreate, current_user = Depends(get_current_user)):
     """
     Create a new quiz session.
@@ -321,7 +321,7 @@ async def create_quiz(quiz: QuizCreate, current_user = Depends(get_current_user)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/quizzes/{quiz_id}/start", response_model=QuizResponse)
+@app.post("/api/v1/quizzes/{quiz_id}/start", response_model=QuizResponse)
 async def start_quiz(quiz_id: str, current_user = Depends(get_current_user)):
     """
     Start a quiz session.
@@ -341,7 +341,7 @@ async def start_quiz(quiz_id: str, current_user = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/quizzes/{quiz_id}/answer")
+@app.post("/api/v1/quizzes/{quiz_id}/answer")
 async def submit_answer(quiz_id: str, answer: AnswerSubmission, current_user = Depends(get_current_user)):
     """
     Submit an answer for a quiz question.
@@ -359,7 +359,7 @@ async def submit_answer(quiz_id: str, answer: AnswerSubmission, current_user = D
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/quizzes/{quiz_id}/finish", response_model=QuizResult)
+@app.post("/api/v1/quizzes/{quiz_id}/finish", response_model=QuizResult)
 async def finish_quiz(quiz_id: str, current_user = Depends(get_current_user)):
     """
     Finish a quiz and calculate results.
