@@ -79,7 +79,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 async def root():
     return {"message": "User Management Service", "version": "1.0.0"}
 
-@app.post("/auth/signup", response_model=dict, status_code=status.HTTP_201_CREATED)
+@app.post("/api/v1/auth/signup", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def signup(request: SignupRequest):
     """
     Register a new user with email and password.
@@ -121,7 +121,7 @@ async def signup(request: SignupRequest):
             detail=str(e)
         )
 
-@app.post("/auth/login", response_model=dict)
+@app.post("/api/v1/auth/login", response_model=dict)
 async def login(request: LoginRequest):
     """
     Authenticate user and return access token.
@@ -150,7 +150,7 @@ async def login(request: LoginRequest):
             detail="Invalid email or password"
         )
 
-@app.get("/users/me", response_model=UserResponse)
+@app.get("/api/v1/users/me", response_model=UserResponse)
 async def get_current_user_profile(current_user = Depends(get_current_user)):
     """
     Get current user profile.
@@ -177,7 +177,7 @@ async def get_current_user_profile(current_user = Depends(get_current_user)):
             detail=str(e)
         )
 
-@app.put("/users/me/settings", response_model=UserSettings)
+@app.put("/api/v1/users/me/settings", response_model=UserSettings)
 async def update_user_settings(
     settings: UserSettingsUpdate,
     current_user = Depends(get_current_user)
@@ -208,7 +208,7 @@ async def update_user_settings(
             detail=str(e)
         )
 
-@app.get("/users/me/settings", response_model=UserSettings)
+@app.get("/api/v1/users/me/settings", response_model=UserSettings)
 async def get_user_settings(current_user = Depends(get_current_user)):
     """
     Get user settings and preferences.
