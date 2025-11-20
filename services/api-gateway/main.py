@@ -77,7 +77,7 @@ async def proxy_request(url: str, method: str, headers: dict, content: Optional[
 # Auth & User Routes
 @app.api_route("/api/v1/auth/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def auth_proxy(path: str, request: Request):
-    url = f"{USER_SERVICE_URL}/auth/{path}"
+    url = f"{USER_SERVICE_URL}/api/v1/auth/{path}"
     return await proxy_request(
         url, 
         request.method, 
@@ -88,7 +88,7 @@ async def auth_proxy(path: str, request: Request):
 
 @app.api_route("/api/v1/users/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def users_proxy(path: str, request: Request):
-    url = f"{USER_SERVICE_URL}/users/{path}"
+    url = f"{USER_SERVICE_URL}/api/v1/users/{path}"
     return await proxy_request(
         url, 
         request.method, 
@@ -102,7 +102,7 @@ async def users_proxy(path: str, request: Request):
 # Always forward to /files (no trailing slash) to avoid redirect issues
 @app.api_route("/api/v1/files", methods=["GET", "POST", "PUT", "DELETE"])
 async def files_root_proxy(request: Request):
-    url = f"{FILE_SERVICE_URL}/files"
+    url = f"{FILE_SERVICE_URL}/api/v1/files"
     return await proxy_request(
         url,
         request.method,
@@ -113,7 +113,7 @@ async def files_root_proxy(request: Request):
 
 @app.api_route("/api/v1/files/", methods=["GET", "POST", "PUT", "DELETE"])
 async def files_root_slash_proxy(request: Request):
-    url = f"{FILE_SERVICE_URL}/files"
+    url = f"{FILE_SERVICE_URL}/api/v1/files"
     return await proxy_request(
         url,
         request.method,
@@ -124,7 +124,7 @@ async def files_root_slash_proxy(request: Request):
 
 @app.api_route("/api/v1/files/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def files_proxy(path: str, request: Request):
-    url = f"{FILE_SERVICE_URL}/files/{path}"
+    url = f"{FILE_SERVICE_URL}/api/v1/files/{path}"
     return await proxy_request(
         url, 
         request.method, 
