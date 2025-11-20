@@ -1,6 +1,6 @@
 # Practice Platform Microservices
 
-A production-ready microservices application for generating and taking quizzes from documents, powered by Supabase and Google Gemini.
+A production-ready  microservices application for generating and taking quizzes from documents, powered by Supabase and Google Gemini.
 
 ## Architecture
 
