@@ -1,6 +1,11 @@
-# Practice Platform Microservices
+# Practice Platform
 
-A production-ready  microservices application for generating and taking quizzes from documents, powered by Supabase and Google Gemini.
+## Project Overview
+
+**Practice Platform** is a tool that helps students turn their study materials into quick and useful practice quizzes.  
+A student can upload **PDFs, PPTs, or class notes**, pick the type of questions they want (theory-based, practical, memory-focused, etc.), and the platform will generate a quiz from that content.
+
+The goal is simple: make it easier for students to revise, test themselves, and understand where they stand.
 
 ## Architecture
 
@@ -48,6 +53,10 @@ Manifests are available in the `k8s/` directory.
 2. Apply config: `kubectl apply -f k8s/configmap.yaml`
 3. Deploy services: `kubectl apply -f k8s/`
 
+### Front-end 
+`pnpm install`
+`pnpm dev`
+
 ### Vercel (Frontend)
 The `app/` directory contains the Next.js frontend.
 1. Set `NEXT_PUBLIC_API_URL` to your deployed API Gateway URL.
@@ -58,3 +67,5 @@ The `app/` directory contains the Next.js frontend.
 - User Service: http://localhost:8001/docs
 - File Service: http://localhost:8002/docs
 - Question Service: http://localhost:8003/docs
+
+
