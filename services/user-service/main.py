@@ -1,3 +1,4 @@
+from fastapi import Request
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -6,6 +7,11 @@ from typing import Optional
 import os
 from supabase import create_client, Client
 from datetime import datetime
+import strawberry
+from strawberry.fastapi import GraphQLRouter
+from strawberry.types import Info
+from strawberry.scalars import JSON
+from typing import Any
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -55,6 +61,140 @@ class UserSettingsUpdate(BaseModel):
 class UserSettings(BaseModel):
     user_id: str
     preferences: dict
+
+# Strawberry GraphQL Types
+@strawberry.type
+class GQLUser:
+    id: str
+    email: str
+    full_name: str | None
+    role: str
+    created_at: datetime
+
+@strawberry.type
+class GQLUserSettings:
+    user_id: str
+    preferences: JSON
+
+@strawberry.type
+class AuthPayload:
+    access_token: str
+    refresh_token: str
+    token_type: str
+    expires_in: int
+
+def map_row_to_user(row: dict) -> GQLUser:
+    created_at_val = row.get("created_at")
+    if isinstance(created_at_val, str):
+        # Handle potential trailing Z (UTC) from Supabase
+        try:
+            created_at_val = datetime.fromisoformat(created_at_val.replace("Z", "+00:00"))
+        except Exception:
+            created_at_val = datetime.utcnow()
+    return GQLUser(
+        id=row["id"],
+        email=row["email"],
+        full_name=row.get("full_name"),
+        role=row.get("role", "user"),
+        created_at=created_at_val,
+    )
+
+async def get_current_user_token(info: Info) -> str:
+    # Extract Authorization header
+    request = info.context["request"]
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing bearer token")
+    return auth_header.split(" ", 1)[1]
+
+async def get_current_user_obj(info: Info):
+    token = await get_current_user_token(info)
+    try:
+        user = supabase.auth.get_user(token)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials")
+        return user.user
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+
+@strawberry.type
+class Query:
+    @strawberry.field
+    async def me(self, info: Info) -> GQLUser:
+        current = await get_current_user_obj(info)
+        result = supabase.table("users").select("*").eq("id", current.id).execute()
+        if result.data and len(result.data) > 0:
+            return map_row_to_user(result.data[0])
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User profile not found")
+
+    @strawberry.field
+    async def my_settings(self, info: Info) -> GQLUserSettings:
+        current = await get_current_user_obj(info)
+        result = supabase.table("user_settings").select("*").eq("user_id", current.id).execute()
+        if result.data and len(result.data) > 0:
+            data = result.data[0]
+            return GQLUserSettings(user_id=data["user_id"], preferences=data.get("preferences", {}))
+        return GQLUserSettings(user_id=current.id, preferences={})
+
+@strawberry.type
+class Mutation:
+    @strawberry.mutation
+    async def signup(self, email: str, password: str, full_name: str | None = None) -> GQLUser:
+        try:
+            response = supabase.auth.sign_up({
+                "email": email,
+                "password": password,
+                "options": {"data": {"full_name": full_name}}
+            })
+            if response.user:
+                supabase.table("users").insert({
+                    "id": response.user.id,
+                    "email": email,
+                    "full_name": full_name,
+                    "role": "user"
+                }).execute()
+                row = {
+                    "id": response.user.id,
+                    "email": email,
+                    "full_name": full_name,
+                    "role": "user",
+                    "created_at": datetime.utcnow(),
+                }
+                return map_row_to_user(row)
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to create user")
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+    @strawberry.mutation
+    async def login(self, email: str, password: str) -> AuthPayload:
+        try:
+            response = supabase.auth.sign_in_with_password({"email": email, "password": password})
+            if response.session:
+                return AuthPayload(
+                    access_token=response.session.access_token,
+                    refresh_token=response.session.refresh_token,
+                    token_type="bearer",
+                    expires_in=response.session.expires_in
+                )
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
+
+    @strawberry.mutation
+    async def update_my_settings(self, info: Info, preferences: JSON) -> GQLUserSettings:
+        current = await get_current_user_obj(info)
+        result = supabase.table("user_settings").upsert({"user_id": current.id, "preferences": preferences}).execute()
+        if result.data is not None:
+            return GQLUserSettings(user_id=current.id, preferences=preferences)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to update settings")
+
+schema = strawberry.Schema(query=Query, mutation=Mutation)
+
+def get_context(request: Request):
+    return {"request": request}
+
+graphql_app = GraphQLRouter(schema, context_getter=get_context)
+app.include_router(graphql_app, prefix="/graphql")
 
 # Dependency to get current user
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
