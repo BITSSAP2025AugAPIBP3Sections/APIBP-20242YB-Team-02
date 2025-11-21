@@ -1,0 +1,87 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+# ============================
+#           TYPES
+# ============================
+
+type GQLUser {
+  id: ID!
+  email: String!
+  full_name: String
+  role: String!
+  created_at: DateTime!
+}
+
+type GQLUserSettings {
+  user_id: ID!
+  preferences: JSON!
+}
+
+type AuthPayload {
+  access_token: String!
+  refresh_token: String!
+  token_type: String!
+  expires_in: Int!
+}
+
+# ============================
+#          QUERIES
+# ============================
+
+type Query {
+  """
+  Returns the authenticated user's full profile.
+  Requires Authorization: Bearer <token>
+  """
+  me: GQLUser!
+
+  """
+  Returns the authenticated user's saved preferences.
+  If no record exists, returns empty preferences.
+  """
+  my_settings: GQLUserSettings!
+}
+
+# ============================
+#         MUTATIONS
+# ============================
+
+type Mutation {
+
+  """
+  Create a new user via Supabase authentication.
+  Also inserts a row into the 'users' table.
+  """
+  signup(
+    email: String!,
+    password: String!,
+    full_name: String
+  ): GQLUser!
+
+  """
+  Logs in a user using Supabase password auth.
+  Returns JWT access/refresh tokens.
+  """
+  login(
+    email: String!,
+    password: String!
+  ): AuthPayload!
+
+  """
+  Updates the authenticated user's settings.
+  Overwrites or inserts row into 'user_settings'.
+  """
+  update_my_settings(
+    preferences: JSON!
+  ): GQLUserSettings!
+}
+
+# ============================
+#     SCALARS USED
+# ============================
+
+scalar DateTime
+scalar JSON
