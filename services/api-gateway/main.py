@@ -137,7 +137,7 @@ async def files_proxy(path: str, request: Request):
 
 @app.api_route("/api/v1/rulesets", methods=["GET", "POST", "PUT", "DELETE"])
 async def rulesets_root_proxy(request: Request):
-    url = f"{QUESTION_SERVICE_URL}/rulesets"
+    url = f"{QUESTION_SERVICE_URL}/api/v1/rulesets"
     return await proxy_request(
         url,
         request.method,
@@ -148,7 +148,7 @@ async def rulesets_root_proxy(request: Request):
 
 @app.api_route("/api/v1/rulesets/", methods=["GET", "POST", "PUT", "DELETE"])
 async def rulesets_root_slash_proxy(request: Request):
-    url = f"{QUESTION_SERVICE_URL}/rulesets"
+    url = f"{QUESTION_SERVICE_URL}/api/v1/rulesets"
     return await proxy_request(
         url,
         request.method,
@@ -159,7 +159,7 @@ async def rulesets_root_slash_proxy(request: Request):
 
 @app.api_route("/api/v1/rulesets/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def rulesets_proxy(path: str, request: Request):
-    url = f"{QUESTION_SERVICE_URL}/rulesets/{path}"
+    url = f"{QUESTION_SERVICE_URL}/api/v1/rulesets/{path}"
     return await proxy_request(
         url,
         request.method,
@@ -170,7 +170,7 @@ async def rulesets_proxy(path: str, request: Request):
 
 @app.api_route("/api/v1/generate", methods=["POST"])
 async def generate_proxy(request: Request):
-    url = f"{QUESTION_SERVICE_URL}/generate"
+    url = f"{QUESTION_SERVICE_URL}/api/v1/generate"
     return await proxy_request(
         url,
         request.method,
@@ -182,7 +182,7 @@ async def generate_proxy(request: Request):
 
 @app.api_route("/api/v1/quizzes", methods=["GET", "POST", "PUT", "DELETE"])
 async def quizzes_root_proxy(request: Request):
-    url = f"{QUESTION_SERVICE_URL}/quizzes"
+    url = f"{QUESTION_SERVICE_URL}/api/v1/quizzes"
     return await proxy_request(
         url,
         request.method,
@@ -193,7 +193,7 @@ async def quizzes_root_proxy(request: Request):
 
 @app.api_route("/api/v1/quizzes/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def quizzes_proxy(path: str, request: Request):
-    url = f"{QUESTION_SERVICE_URL}/quizzes/{path}"
+    url = f"{QUESTION_SERVICE_URL}/api/v1/quizzes/{path}"
     return await proxy_request(
         url,
         request.method,
