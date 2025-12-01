@@ -41,7 +41,7 @@ Related to #
 
 ---
 
-## 🧪 How Has This Been Tested?
+##  How Has This Been Tested?
 
 ### Test Configuration
 
@@ -62,8 +62,6 @@ Related to #
 ### Additional Test Notes
 
 <!-- Describe manual tests, edge cases tested, or any special scenarios -->
-
-
 
 ---
 

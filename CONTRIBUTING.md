@@ -560,7 +560,7 @@ If you have questions not covered in this guide:
 - Check the [README.md](./README.md) 
 ---
 
-## 🙏 Thank You!
+##  Thank You!
 
 Thank you for contributing to Practice Platform! Your contributions help students learn more effectively and revise smartly.
 
