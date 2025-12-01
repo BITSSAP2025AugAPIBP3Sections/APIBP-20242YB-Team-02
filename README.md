@@ -1,93 +1,71 @@
-# Flowcast
+# Practice Platform
 
-**Unified Social Media Posting and Management Platform**
+## Project Overview
 
-Flowcast is a unified platform that enables users and businesses to create, schedule, and post content across multiple social media platforms — all from one dashboard. It integrates with platforms like **Instagram**, **X (Twitter)**, **LinkedIn**, and **Facebook**, simplifying online presence management.
+**Practice Platform** is a tool that helps students turn their study materials into quick and useful practice quizzes.  
+A student can upload **PDFs, PPTs, or class notes**, pick the type of questions they want (theory-based, practical, memory-focused, etc.), and the platform will generate a quiz from that content.
 
----
+The goal is simple: make it easier for students to revise, test themselves, and understand where they stand.
 
-## Problem Statement
+## Architecture
 
-Managing multiple social media accounts can be:
+- **Frontend**: Next.js 15 (App Router)
+- **API Gateway**: FastAPI
+- **User Service**: FastAPI + Supabase Auth
+- **File Service**: FastAPI + Supabase Storage + Text Extraction
+- **Question Service**: FastAPI + Google Gemini + Supabase DB
 
-- Time-consuming and repetitive  
-- Requires reformatting content for each platform  
-- Analytics must be tracked separately  
-- Existing tools can be expensive or limited  
+## Prerequisites
 
-There is **no accessible, all-in-one solution** that efficiently supports:
-- Multi-platform posting  
-- Scheduling  
-- Analytics  
-- Collaboration  
+- Docker & Docker Compose
+- Python 3.11+
+- Node.js 18+
+- Supabase Project
+- Google Gemini API Key
 
----
+## Setup
 
-## Solution
+1. **Environment Variables**
+   Copy `.env.example` to `.env` in each service directory and fill in your credentials.
 
-Flowcast abstracts the complexities of each platform and provides a **single interface + unified API** to:
+2. **Database Setup**
+   Initialize the Supabase database and storage buckets:
+   \`\`\`bash
+   pip install -r scripts/requirements.txt
+   python scripts/setup_db.py
+   \`\`\`
+   *Note: Ensure `POSTGRES_URL` is set in your environment for the script to work.*
 
-- Create and customize posts for multiple platforms
-- Schedule content across selected platforms
-- Automatically format content appropriately
-- Manage hashtags, mentions, and media
-- View analytics in one place
-- Collaborate with teams and manage shared accounts
+3. **Run Locally**
+   \`\`\`bash
+   docker-compose up --build
+   \`\`\`
 
----
+4. **Frontend**
+   The frontend runs on `http://localhost:3000`.
+   The API Gateway runs on `http://localhost:8000`.
 
-## Core Features
+## Deployment
 
-| Feature | Description |
-|--------|-------------|
-| **Unified Posting API** | Post text, images, or videos to multiple platforms with one request |
-| **Smart Scheduler** | Schedule posts across platforms simultaneously |
-| **Auto-Formatter** | Adapts captions and media to suit each platform’s rules |
-| **Analytics Dashboard** | View aggregated likes, comments, shares, and more |
-| **Team Collaboration** | Approval workflows and multi-user access |
-| **Content Library** | Store captions, media assets, and templates |
+### Kubernetes
+Manifests are available in the `k8s/` directory.
+1. Create secrets: `kubectl apply -f k8s/secrets.yaml`
+2. Apply config: `kubectl apply -f k8s/configmap.yaml`
+3. Deploy services: `kubectl apply -f k8s/`
 
----
+### Front-end 
+`pnpm install`
+`pnpm dev`
 
-## Technical Overview
+### Vercel (Frontend)
+The `app/` directory contains the Next.js frontend.
+1. Set `NEXT_PUBLIC_API_URL` to your deployed API Gateway URL.
+2. Deploy using `vercel`.
 
-| Layer | Tech Stack |
-|------|------------|
-| **Frontend** | React / Next.js |
-| **Backend** | Node.js / Express |
-| **Database** | PostgreSQL / MongoDB |
-| **Auth** | OAuth 2.0 + JWT Sessions |
-| **APIs** | REST + GraphQL Integrations |
-| **Deployment** | Docker, AWS, Vercel |
+## API Documentation
+- Gateway: http://localhost:8000/docs
+- User Service: http://localhost:8001/docs
+- File Service: http://localhost:8002/docs
+- Question Service: http://localhost:8003/docs
 
----
 
-## Team Members
-
-| Name | Roll No |
-|------|--------|
-| Shaik Shajid Hussain | 2024sl93012 |
-| Antony Berlin | 2024sl93071 |
-| Prasannakumar V | 2024sl93058 |
-| Sowmya B | 2024sl93056 |
-| Sandhyana K | 2024sl93091 |
-
----
-
-## Vision
-
-> To empower creators, marketers, and businesses to broadcast their voice seamlessly across the digital world — saving time, maintaining consistency, and amplifying impact.
-
----
-
-## Future Enhancements
-
-- AI-generated captions and hashtag suggestions
-- Automated responses to comments and DMs
-- Real-time sentiment and engagement analytics
-- Browser extension + mobile app support
-
----
-
-### Tagline:
-**Flowcast — Post once. Reach everywhere.**
